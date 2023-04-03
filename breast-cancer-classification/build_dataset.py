@@ -1,39 +1,41 @@
-from cancernet import config
+import os
+import random
+import shutil
 from imutils import paths
-import random, shutil, os
+from cancernet import config
 
-originalPaths=list(paths.list_images(config.INPUT_DATASET))
+originalPaths = list(paths.list_images(config.INPUT_DATASET))
 random.seed(7)
 random.shuffle(originalPaths)
 
-index=int(len(originalPaths)*config.TRAIN_SPLIT)
-trainPaths=originalPaths[:index]
-testPaths=originalPaths[index:]
+index = int(len(originalPaths) * config.TRAIN_SPLIT)
+trainPaths = originalPaths[:index]
+testPaths = originalPaths[index:]
 
-index=int(len(trainPaths)*config.VAL_SPLIT)
-valPaths=trainPaths[:index]
-trainPaths=trainPaths[index:]
+index = int(len(trainPaths) * config.VAL_SPLIT)
+valPaths = trainPaths[:index]
+trainPaths = trainPaths[index:]
 
-datasets=[("training", trainPaths, config.TRAIN_PATH),
-          ("validation", valPaths, config.VAL_PATH),
-          ("testing", testPaths, config.TEST_PATH)
-]
+datasets = [("training", trainPaths, config.TRAIN_PATH),
+            ("validation", valPaths, config.VAL_PATH),
+            ("testing", testPaths, config.TEST_PATH)
+            ]
 
 for (setType, originalPaths, basePath) in datasets:
-        print(f'Building {setType} set')
+    print(f'Building {setType} set')
 
-        if not os.path.exists(basePath):
-                print(f'Building directory {basePath}')
-                os.makedirs(basePath)
+    if not os.path.exists(basePath):
+        print(f'Building directory {basePath}')
+        os.makedirs(basePath)
 
-        for path in originalPaths:
-                file=path.split(os.path.sep)[-1]
-                label=file[-5:-4]
+    for path in originalPaths:
+        file = path.split(os.path.sep)[-1]
+        label = file[-5:-4]
 
-                labelPath=os.path.sep.join([basePath,label])
-                if not os.path.exists(labelPath):
-                        print(f'Building directory {labelPath}')
-                        os.makedirs(labelPath)
+        labelPath = os.path.sep.join([basePath, label])
+        if not os.path.exists(labelPath):
+            print(f'Building directory {labelPath}')
+            os.makedirs(labelPath)
 
-                newPath=os.path.sep.join([labelPath, file])
-                shutil.copy2(path, newPath)
+        newPath = os.path.sep.join([labelPath, file])
+        shutil.copy2(path, newPath)
